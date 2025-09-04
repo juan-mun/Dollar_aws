@@ -33,4 +33,4 @@ def test_save_to_s3(monkeypatch):
     # Ejecutamos la función
     filename = save_to_s3({"mock": "data"})
     assert filename.startswith("dolar-")  # El archivo debe iniciar con dolar-
-    assert calls["Bucket"].startswith("dolar_raw")  # El bucket debe ser el correcto
+    assert calls["Bucket"].startswith("dolar-raw")  # El bucket debe ser el correcto

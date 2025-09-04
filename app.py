@@ -9,7 +9,7 @@ from datetime import datetime
 s3 = boto3.client("s3")
 
 # Nombre del bucket definido como variable de entorno
-BUCKET_NAME = os.getenv("BUCKET_NAME", "dolar_raw_CmJm")
+BUCKET_NAME = os.getenv("BUCKET_NAME", "dolar-raw-cmjm")
 
 # URL del servicio REST del Banco de la República
 BANREP_URL = "https://totoro.banrep.gov.co/estadisticas-economicas/rest/consultaDatosService/consultaMercadoCambiario"
