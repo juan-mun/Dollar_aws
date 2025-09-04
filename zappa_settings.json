@@ -11,7 +11,7 @@
         ],
         "project_name": "parcial-i",
         "runtime": "python3.10",
-        "s3_bucket": "dolar_raw_CmJm",
+        "s3_bucket": "dolar-raw-cmjm",
         "keep_warm": false,
         "apigateway_enabled": false,
         "manage_roles": false,
