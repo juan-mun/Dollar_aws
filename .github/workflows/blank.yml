@@ -24,13 +24,60 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install python requirements.txt
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          python -m venv env
+          source env/bin/activate
+          pip install -r requirements.txt
+      - name: Execute python tests
+        run: |
+         source env/bin/activate
+         pytest
+         
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+            aws-region: us-east-1
+            
+      - name: Check if Lambda function exists
+        id: check_function
+        run: |
+          python -m venv env
+          source env/bin/activate
+          pip install -r requirements.txt
+          FUNCTION_NAME=$(python -c "
+          import json
+          with open('zappa_settings.json', 'r') as f:
+              config = json.load(f)
+              print(config['dev']['project_name'] + '-dev')
+          ")
+          echo "Function name: $FUNCTION_NAME"
+          
+          if aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null; then
+            echo "function_exists=true" >> $GITHUB_OUTPUT
+            echo "Lambda function exists, will use update"
+          else
+            echo "function_exists=false" >> $GITHUB_OUTPUT
+            echo "Lambda function does not exist, will use deploy"
+          fi
+      
+      # Deploy si la función no existe
+      - name: Deploy with Zappa (first time)
+        if: steps.check_function.outputs.function_exists == 'false'
+        run: |
+          source env/bin/activate
+          zappa deploy dev
+      
+      # Update si la función ya existe
+      - name: Update with Zappa (existing function)
+        if: steps.check_function.outputs.function_exists == 'true'
+        run: |
+          source env/bin/activate
+          zappa update dev
