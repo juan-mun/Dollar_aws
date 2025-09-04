@@ -10,7 +10,11 @@
             "concurrent"
         ],
         "project_name": "parcial-i",
-        "runtime": "python3.13",
-        "s3_bucket": "dolar_raw_CmJm"
+        "runtime": "python3.10",
+        "s3_bucket": "dolar_raw_CmJm",
+        "keep_warm": false,
+        "apigateway_enabled": false,
+        "manage_roles": false,
+        "role_name": "LabRole"
     }
 }
