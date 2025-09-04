@@ -9,9 +9,8 @@
             "s3transfer",
             "concurrent"
         ],
-        "profile_name": "default",
         "project_name": "parcial-i",
-        "runtime": "python3.10",
+        "runtime": "python3.13",
         "s3_bucket": "dolar_raw_CmJm"
     }
 }
