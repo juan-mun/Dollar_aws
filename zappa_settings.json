@@ -9,7 +9,7 @@
             "s3transfer",
             "concurrent"
         ],
-        "project_name": "parcial-i",
+        "project_name": "Parcial_I",
         "runtime": "python3.10",
         "s3_bucket": "zappa-2woxg7olo",
         "keep_warm": false,
