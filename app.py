@@ -46,17 +46,12 @@ def save_to_s3(data: dict):
     return filename
 
 def lambda_handler(event=None, context=None):
-    """
-    Función principal de AWS Lambda.
-    Descarga los datos del dólar y los almacena en S3.
+    try:
+        data = fetch_dollar_data()
+        filename = save_to_s3(data)
+        print(f"Datos guardados en s3://{BUCKET_NAME}/{filename}")
+        return {"status": "ok", "file": filename}
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return {"status": "error", "message": str(e)}
 
-    Args:
-        event (dict): Evento de AWS (no se usa en este caso).
-        context (object): Contexto de Lambda (no se usa en este caso).
-
-    Returns:
-        dict: Estado y nombre del archivo almacenado.
-    """
-    data = fetch_dollar_data()
-    filename = save_to_s3(data)
-    return {"status": "ok", "file": filename}

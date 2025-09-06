@@ -15,6 +15,12 @@
         "keep_warm": false,
         "apigateway_enabled": false,
         "manage_roles": false,
-        "role_name": "LabRole"
+        "role_name": "LabRole",
+        "events": [
+            {
+                "function": "app.lambda_handler",
+                "expression": "cron(0 23 * * ? *)"  // 18:00 hora Colombia (UTC-5)
+            }
+        ]
     }
 }
