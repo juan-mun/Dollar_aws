@@ -19,7 +19,7 @@
         "events": [
             {
                 "function": "app.lambda_handler",
-                "expression": "cron(0 23 * * ? *)"  // 18:00 hora Colombia (UTC-5)
+                "expression": "cron(0 23 * * ? *)"
             }
         ]
     }
