@@ -17,10 +17,12 @@ jobs:
           python-version: '3.10'  # Usa la misma versión que tu Lambda
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m venv env
+          source env/bin/activate
           pip install -r requirements.txt
       - name: Run tests
         run: |
+          source env/bin/activate
           pytest
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -32,6 +34,7 @@ jobs:
       - name: Check if Lambda function exists
         id: check_function
         run: |
+          source env/bin/activate
           FUNCTION_NAME=$(python -c "
           import json
           with open('zappa_settings.json', 'r') as f:
@@ -47,8 +50,12 @@ jobs:
       - name: Deploy with Zappa (first time)
         if: steps.check_function.outputs.function_exists == 'false'
         run: |
+          source env/bin/activate
           zappa deploy dev
       - name: Update with Zappa (existing function)
         if: steps.check_function.outputs.function_exists == 'true'
         run: |
+          source env/bin/activate
           zappa update dev
+
+
