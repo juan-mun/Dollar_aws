@@ -1,57 +1,37 @@
-# This is a basic workflow to help you get started with Actions
+name: CI/CD Pipeline
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: ["master"]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  deploy:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-      # Runs a set of commands using the runners shell
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-      - name: Install python requirements.txt
+          python-version: '3.10'  # Usa la misma versión que tu Lambda
+      - name: Install dependencies
         run: |
-          python -m venv env
-          source env/bin/activate
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Execute python tests
+      - name: Run tests
         run: |
-         source env/bin/activate
-         pytest
-         
+          pytest
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-            aws-region: us-east-1
-            
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
       - name: Check if Lambda function exists
         id: check_function
         run: |
-          python -m venv env
-          source env/bin/activate
-          pip install -r requirements.txt
           FUNCTION_NAME=$(python -c "
           import json
           with open('zappa_settings.json', 'r') as f:
@@ -59,25 +39,16 @@ jobs:
               print(config['dev']['project_name'] + '-dev')
           ")
           echo "Function name: $FUNCTION_NAME"
-          
           if aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null; then
             echo "function_exists=true" >> $GITHUB_OUTPUT
-            echo "Lambda function exists, will use update"
           else
             echo "function_exists=false" >> $GITHUB_OUTPUT
-            echo "Lambda function does not exist, will use deploy"
           fi
-      
-      # Deploy si la función no existe
       - name: Deploy with Zappa (first time)
         if: steps.check_function.outputs.function_exists == 'false'
         run: |
-          source env/bin/activate
           zappa deploy dev
-      
-      # Update si la función ya existe
       - name: Update with Zappa (existing function)
         if: steps.check_function.outputs.function_exists == 'true'
         run: |
-          source env/bin/activate
           zappa update dev
