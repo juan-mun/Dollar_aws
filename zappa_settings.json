@@ -4,6 +4,7 @@
         "aws_region": "us-east-1",
         "project_name": "Parcial_I",
         "runtime": "python3.10",
+        "s3_bucket": "zappa-deploy-dolar-lambda",
         "keep_warm": false,
         "apigateway_enabled": false,
         "manage_roles": false,
