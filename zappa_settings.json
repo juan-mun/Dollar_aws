@@ -2,13 +2,6 @@
     "dev": {
         "app_function": "app.lambda_handler",
         "aws_region": "us-east-1",
-        "exclude": [
-            "boto3",
-            "dateutil",
-            "botocore",
-            "s3transfer",
-            "concurrent"
-        ],
         "project_name": "Parcial_I",
         "runtime": "python3.10",
         "keep_warm": false,
