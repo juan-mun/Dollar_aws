@@ -2,9 +2,16 @@
     "dev": {
         "app_function": "app.lambda_handler",
         "aws_region": "us-east-1",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
         "project_name": "Parcial_I",
         "runtime": "python3.10",
-        "s3_bucket": "zappa-deploy-dolar-lambda",
+        "s3_bucket": "dolar-raw-cmjm",
         "slim_handler": true,
         "keep_warm": false,
         "apigateway_enabled": false,
@@ -13,8 +20,9 @@
         "events": [
             {
                 "function": "app.lambda_handler",
-                "expression": "cron(0 23 * * ? *)"
+                "expression": "cron(50 0 * * ? *)"
             }
         ]
     }
 }
+

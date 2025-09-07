@@ -29,7 +29,7 @@ def save_to_s3(data, filename):
         ContentType="application/json"
     )
 
-def lambda_handler(event=None, context=None):
+def lambda_handler(event, context):
     """Función principal que será ejecutada por AWS Lambda"""
     data = fetch_dollar_data()
     filename = get_timestamp_filename()
