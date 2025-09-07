@@ -31,31 +31,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
-      - name: Check if Lambda function exists
-        id: check_function
-        run: |
+      - name: Deploy zappa Dollar
+         run: |
           source env/bin/activate
-          FUNCTION_NAME=$(python -c "
-          import json
-          with open('zappa_settings.json', 'r') as f:
-              config = json.load(f)
-              print(config['dev']['project_name'] + '-dev')
-          ")
-          echo "Function name: $FUNCTION_NAME"
-          if aws lambda get-function --function-name $FUNCTION_NAME 2>/dev/null; then
-            echo "function_exists=true" >> $GITHUB_OUTPUT
+          if zappa status dev; then
+            zappa update dev
           else
-            echo "function_exists=false" >> $GITHUB_OUTPUT
+            zappa deploy dev
           fi
-      - name: Deploy with Zappa (first time)
-        if: steps.check_function.outputs.function_exists == 'false'
-        run: |
-          source env/bin/activate
-          zappa deploy dev
-      - name: Update with Zappa (existing function)
-        if: steps.check_function.outputs.function_exists == 'true'
-        run: |
-          source env/bin/activate
-          zappa update dev
-
 
