@@ -32,7 +32,7 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
       - name: Deploy zappa Dollar
-         run: |
+        run: |
           source env/bin/activate
           if zappa status dev; then
             zappa update dev
